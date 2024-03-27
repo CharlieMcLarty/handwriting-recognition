@@ -7,3 +7,9 @@ if __name__ == "__main__":
 
     sc = spark.sparkContext
     print(sc)
+
+    df = (spark.read.option("header", "")
+          .csv("./data/emnist-balanced-train.csv", header=False))
+    print(df.count())
+
+    df.show()
