@@ -6,3 +6,4 @@ venv\Scripts\activate
 
 # Install Dependencies
 pip install pyspark
+pip install tensorflow
