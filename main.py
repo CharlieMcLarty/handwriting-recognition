@@ -17,6 +17,10 @@ if __name__ == "__main__":
                 .csv("./data/emnist-balanced-train.csv", header=False))
     train_df = train_df.withColumnRenamed("_c0", "label")
 
+    # Create separate dataframe for labels and pixels
     labels = train_df.select("label")
     pixels = train_df.drop("label")
 
+    # Prints shape of labels and pixels dataframe
+    print((labels.count(), len(labels.columns)))
+    print((pixels.count(), len(pixels.columns)))
