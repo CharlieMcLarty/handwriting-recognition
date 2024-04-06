@@ -1,14 +1,12 @@
 # In[1]:
 import pyspark
 from pyspark.sql import *
-from keras.datasets import mnist
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from pyspark.sql.types import FloatType
-from pyspark.ml.linalg import Vectors
 
 # In[2]:
+# Create Spark session using all available cores
 spark = SparkSession.builder \
     .appName("HandwritingRecognitionModel") \
     .master("local[*]") \
