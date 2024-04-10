@@ -73,7 +73,6 @@ plt.imshow(x_train[0], cmap="gray")
 plt.show()
 
 # In[6]
-
 model = tf.keras.Sequential([
     tf.keras.layers.Conv2D(32, (3, 3), activation="relu", input_shape=(28, 28, 1)),
     tf.keras.layers.MaxPooling2D(2, 2),
@@ -155,5 +154,5 @@ plt.show()
 # In[12]:
 # Creates dictionary for label mapping
 mapping_data = spark.sparkContext.textFile("./data/emnist-balanced-mapping.txt").collect()
-mapping = dict(map(lambda x: (int(x.split()[0]), int(x.split()[1])), mapping_data))
+mapping = dict(map(lambda x: (int(x.split()[0]), chr(int(x.split()[1]))), mapping_data))
 print(mapping)
