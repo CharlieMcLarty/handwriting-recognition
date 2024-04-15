@@ -1,4 +1,5 @@
 # In[1]:
+import keras.models
 from pyspark.ml.feature import VectorAssembler
 from pyspark.sql import *
 import matplotlib.pyplot as plt
@@ -99,6 +100,7 @@ model.compile(optimizer="Adam",
               metrics=(["accuracy"]))
 
 # In[8]:
+# Prevents overfitting
 early_stopping_callback = EarlyStopping(monitor='val_accuracy',
                                         min_delta=0,
                                         verbose=0,
@@ -106,11 +108,11 @@ early_stopping_callback = EarlyStopping(monitor='val_accuracy',
                                         patience=3,
                                         mode='max')
 
+
 # In[9]:
 epochs = 10
 batch_size = 100
 
-# In[10]:
 history = model.fit(x_train, y_train,
                     epochs=epochs,
                     batch_size=batch_size,
@@ -120,14 +122,13 @@ history = model.fit(x_train, y_train,
 
 if early_stopping_callback.stopped_epoch > 0:
     print(
-        f"Training was stopped early at epoch {early_stopping_callback.stopped_epoch + 1} due to reaching the desired accuracy.")
+        f"Training was stopped early at epoch {early_stopping_callback.stopped_epoch + 1}")
 else:
-    print("Training completed without early stopping.")
+    print("Training fully completed")
 
-# In[11]:
+# In[10]:
 # Retrieve a list of list results on training and test data
 # sets for each training epoch
-# -----------------------------------------------------------
 acc = history.history['accuracy']
 val_acc = history.history['val_accuracy']
 loss = history.history['loss']
@@ -135,24 +136,29 @@ val_loss = history.history['val_loss']
 
 epochs = range(len(acc))  # Get number of epochs
 
-# ------------------------------------------------
 # Plot training and validation accuracy per epoch
-# ------------------------------------------------
 plt.plot(epochs, acc, 'r', "Training Accuracy")
 plt.plot(epochs, val_acc, 'b', "Validation Accuracy")
 plt.title('Training and validation accuracy')
+plt.tight_layout()
 plt.show()
 print("")
 
-# ------------------------------------------------
 # Plot training and validation loss per epoch
-# ------------------------------------------------
 plt.plot(epochs, loss, 'r', "Training Loss")
 plt.plot(epochs, val_loss, 'b', "Validation Loss")
+plt.tight_layout()
 plt.show()
+
+# In[11]:
+model.save("./models/model_v1.keras")
 
 # In[12]:
 # Creates dictionary for label mapping
 mapping_data = spark.sparkContext.textFile("./data/emnist-balanced-mapping.txt").collect()
 mapping = dict(map(lambda x: (int(x.split()[0]), chr(int(x.split()[1]))), mapping_data))
 print(mapping)
+
+# In[13]:
+# TODO: fix error not allowing model to be loaded
+model2 = keras.models.load_model("./models/model_v1.keras")
