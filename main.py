@@ -92,7 +92,7 @@ model = tf.keras.Sequential([
     tf.keras.layers.Dense(47, activation='softmax')
 ])
 
-model.summary()
+# model.summary()
 
 # In[7]:
 model.compile(optimizer="Adam",
@@ -154,11 +154,7 @@ plt.show()
 model.save("./models/model_v1.keras")
 
 # In[12]:
-# Creates dictionary for label mapping
-mapping_data = spark.sparkContext.textFile("./data/emnist-balanced-mapping.txt").collect()
-mapping = dict(map(lambda x: (int(x.split()[0]), chr(int(x.split()[1]))), mapping_data))
-print(mapping)
 
-# In[13]:
 # TODO: fix error not allowing model to be loaded
-model2 = keras.models.load_model("./models/model_v1.keras")
+
+model2 = keras.models.load_model("./models/model_v1.keras", compile=False)
