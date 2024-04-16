@@ -53,24 +53,40 @@ x_test = x_test.astype('float32') / 255
 x_train = x_train.reshape((-1, 28, 28, 1))
 x_test = x_test.reshape((-1, 28, 28, 1))
 
-y_train = np.array(train_df.select("label").collect())
-y_test = np.array(test_df.select("label").collect())
-y_train = tf.keras.utils.to_categorical(y_train, 47)
-y_test = tf.keras.utils.to_categorical(y_test, 47)
-
-# images = x_train.take(25)
-# fig, _ = plt.subplots(5, 5, figsize=(10, 10))
-# for i, ax in enumerate(fig.axes):
-#     r = images[i]
-#     label = r.label
-#     features = r.features
-#     ax.imshow(features.toArray().reshape(28, 28), cmap="gray")
-#     ax.set_title("True: " + str(label))
-#
-# plt.tight_layout()
+train_labels = np.array(train_df.select("label").collect())
+test_labels = np.array(test_df.select("label").collect())
+y_train = tf.keras.utils.to_categorical(train_labels, 47)
+y_test = tf.keras.utils.to_categorical(test_labels, 47)
 
 # In[15]
-plt.imshow(x_train[0], cmap="gray")
+mapping_data = spark.sparkContext.textFile("./data/emnist-balanced-mapping.txt").collect()
+mapping = dict(map(lambda x: (int(x.split()[0]), chr(int(x.split()[1]))), mapping_data))
+
+nrows, ncols = 4, 5
+total_images = nrows * ncols
+
+# Select a subset of images and labels from x_train and y_train
+indices = np.random.randint(0, x_train.shape[0], total_images)
+images = x_train[indices]
+labels = train_labels[indices]
+labels = labels.flatten()
+
+# Create a figure and arrange the subplots in a grid
+fig, axes = plt.subplots(nrows, ncols, figsize=(12, 8), squeeze=False)
+
+# Plot each image in the grid along with its label
+for i, ax in enumerate(axes.flat):
+    if i < total_images:
+        image = images[i]
+        label = labels[i]
+        label_name = mapping[label]
+        ax.imshow(image, cmap="gray")
+        ax.set_title(label_name)
+        ax.axis('off')
+    else:
+        ax.axis('off')
+
+plt.subplots_adjust(wspace=0.1, hspace=0.3)  # Increased hspace for better title visibility
 plt.show()
 
 # In[6]
@@ -142,7 +158,6 @@ plt.plot(epochs, val_acc, 'b', "Validation Accuracy")
 plt.title('Training and validation accuracy')
 plt.tight_layout()
 plt.show()
-print("")
 
 # Plot training and validation loss per epoch
 plt.plot(epochs, loss, 'r', "Training Loss")
