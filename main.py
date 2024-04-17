@@ -4,6 +4,7 @@ from pyspark.ml.feature import VectorAssembler
 from pyspark.sql import *
 import matplotlib.pyplot as plt
 import numpy as np
+import random
 import tensorflow as tf
 from keras.callbacks import EarlyStopping
 
@@ -173,3 +174,31 @@ model.save("./models/model_v2.keras")
 
 # In[12]:
 model2 = keras.models.load_model("./models/model_v2.keras", compile=False)
+
+# In[22]:
+y_pred = model2.predict(x_test)
+num_samples = 24
+
+# Get random indices for the samples
+random_samples = random.sample(range(len(x_test)), num_samples)
+
+# Create a figure with subplots
+fig = plt.figure(figsize=(12, 8))
+
+for i, idx in enumerate(random_samples):
+    # Create a subplot for each sample
+    ax = fig.add_subplot(4, 6, i+1)
+
+    # Display the image
+    ax.imshow(x_test[idx], cmap="gray")
+
+    # Get the predicted and true labels
+    predicted_label = mapping[y_pred[idx].argmax()]
+    true_label = mapping[y_test[idx].argmax()]
+
+    # Set the title with prediction and true label
+    ax.set_title("Predicted: {}\nTrue: {}".format(predicted_label, true_label))
+    ax.axis("off")
+
+plt.tight_layout()
+plt.show()
