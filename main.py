@@ -29,7 +29,7 @@ test_df = (spark.read
 test_df = test_df.withColumnRenamed("_c0", "label")
 
 # print(train_df.count())
-# print("No of columns: ", len(train_df.columns), train_df.columns)
+#print("No of columns: ", len(train_df.columns), train_df.columns)
 
 # In[4]
 # Condenses the pixels into a vector
@@ -48,17 +48,20 @@ test_df = (vectorAssembler
 # In[5]:
 x_train = np.array(train_df.select("pixels").collect())
 x_test = np.array(test_df.select("pixels").collect())
+
+
+# In[19]
 x_train = x_train.astype('float32') / 255
 x_test = x_test.astype('float32') / 255
-x_train = x_train.reshape((-1, 28, 28, 1))
-x_test = x_test.reshape((-1, 28, 28, 1))
+x_train = x_train.reshape((-1, 28, 28, 1)).swapaxes(1, 2)
+x_test = x_test.reshape((-1, 28, 28, 1)).swapaxes(1, 2)
 
 train_labels = np.array(train_df.select("label").collect())
 test_labels = np.array(test_df.select("label").collect())
 y_train = tf.keras.utils.to_categorical(train_labels, 47)
 y_test = tf.keras.utils.to_categorical(test_labels, 47)
 
-# In[15]
+# In[16]:
 mapping_data = spark.sparkContext.textFile("./data/emnist-balanced-mapping.txt").collect()
 mapping = dict(map(lambda x: (int(x.split()[0]), chr(int(x.split()[1]))), mapping_data))
 
@@ -166,10 +169,7 @@ plt.tight_layout()
 plt.show()
 
 # In[11]:
-model.save("./models/model_v1.keras")
+model.save("./models/model_v2.keras")
 
 # In[12]:
-
-# TODO: fix error not allowing model to be loaded
-
-model2 = keras.models.load_model("./models/model_v1.keras", compile=False)
+model2 = keras.models.load_model("./models/model_v2.keras", compile=False)

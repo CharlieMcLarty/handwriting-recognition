@@ -7,6 +7,7 @@ from matplotlib import pyplot as plt
 
 loaded_model = keras.models.load_model('./models/model_v1.keras', compile=False)
 
+
 # In[2]:
 def process_image(path):
     img = load_img(path, color_mode="grayscale")
@@ -15,9 +16,10 @@ def process_image(path):
     plt.imshow(img)
     plt.show()
     img_array = img_to_array(img)
-    img_array = np.array(img_array).astype('float32')/255
-    img_array = img_array.reshape((-1,28,28,1))
+    img_array = np.array(img_array).astype('float32') / 255
+    img_array = img_array.reshape((-1, 28, 28, 1))
     return img_array
+
 
 # In[3]:
 def create_dic():
@@ -28,12 +30,14 @@ def create_dic():
     spark.stop()
     return mapping
 
+
 def parse_output(prediction, dic):
     return dic[prediction.argmax()]
+
 
 dic = create_dic()
 # In[4]:
 # Path to your image
-test_image = "./images/o_5px.png"
+test_image = "./images/C.png"
 predictions = loaded_model.predict(process_image(test_image))
-print(parse_output(predictions,dic))
+print(parse_output(predictions, dic))
