@@ -5,14 +5,14 @@ from PIL import ImageOps, Image
 from keras.preprocessing.image import *
 from matplotlib import pyplot as plt
 
-loaded_model = keras.models.load_model('./models/model_v2.keras', compile=False)
+loaded_model = keras.models.load_model('./models/model_v.keras', compile=False)
 
 
 # In[2]:
 def process_image(path):
-    img = load_img(path, color_mode="grayscale", target_size=(28, 28), interpolation="lanczos", keep_aspect_ratio="true")
+    img = load_img(path, color_mode="rgb")
     img = ImageOps.invert(img)
-    img = img.resize((28, 28), Image.LANCZOS)
+    img = img.resize((28, 28), Image.LANCZOS).convert("L")
     plt.imshow(img)
     plt.show()
     img_array = img_to_array(img)
@@ -32,12 +32,12 @@ def create_dic():
 
 
 def parse_output(prediction, dic):
-    return dic[prediction.argmax()]
+    return dic[prediction.argmax()%47]
 
 
 dic = create_dic()
 # In[4]:
 # Path to your image
-test_image = "./images/SmallE.png"
+test_image = "./images/_r.png"
 predictions = loaded_model.predict(process_image(test_image))
 print(parse_output(predictions, dic))
