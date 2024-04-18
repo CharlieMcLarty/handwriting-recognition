@@ -1,0 +1,31 @@
+model_v1.keras
+    - Initial implementation of model recognition
+    - Acc: Not recorded
+    - Loss: Not recorded
+    - Dataset: ./data/emnist-balanced
+        - 47 classes
+        - 131,600 total samples
+    - Issues/Notes:
+        Model was trained on data without transpose being applied to it,
+        therefore, for prediction the input must be transposed or transformed.
+
+model_v2.keras
+    - Implements same model as v1 with data training data being transposed correctly
+    - Acc: high 91 (not recorded at the time)
+    - Loss: Not recorded
+    - Dataset: ./data/emnist-balanced
+        - 47 classes
+        - 131,600 total samples
+    - Issues/Notes:
+        Predictions tend to confused E with I if E is not written with a curve to it,
+        also some other predictions mistakes but those are expected
+
+model_v3.keras
+    - Implemented to try and handle mis-predictions better by using larger dataset (same model)
+    - Acc: 91.76        val_acc: 90.39
+    - Loss: 20.75       val_loss: 26.97
+    - Dataset: ./data/emnist-bymerge
+        - 47 classes
+        - 814,255 total samples
+    - Issues/Notes:
+        Mis-predictions persis, this time giving 1 for E instead of I...
