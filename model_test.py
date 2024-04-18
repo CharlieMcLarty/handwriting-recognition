@@ -1,26 +1,32 @@
 # In[1]:
+import os
 import keras.models
 import numpy as np
 from PIL import ImageOps, Image
 from keras.preprocessing.image import *
 from matplotlib import pyplot as plt
 
-loaded_model = keras.models.load_model('./models/model_v.keras', compile=False)
+loaded_model = keras.models.load_model('./models/model_v2.keras', compile=False)
 
 
 # In[2]:
-def process_image(path):
-    img = load_img(path, color_mode="grayscale", target_size=(28, 28), interpolation="lanczos",
+def process_image(img):
+    img = load_img(img, color_mode="grayscale", target_size=(28, 28), interpolation="lanczos",
                    keep_aspect_ratio="true")
     img = ImageOps.invert(img)
-    #img = img.resize((28, 28), Image.LANCZOS).convert("L")
     plt.imshow(img)
     plt.show()
     img_array = img_to_array(img)
     img_array = np.array(img_array).astype('float32') / 255
-    img_array = img_array.reshape((-1, 28, 28, 1))
+    img_array = img_array.reshape((1, 28, 28, 1))
     return img_array
 
+def process(images):
+    arr_images = []
+    for img in images:
+        processed_img = process_image(img)
+        arr_images.append(processed_img)
+    return arr_images
 
 # In[3]:
 def create_dic():
@@ -39,6 +45,12 @@ def parse_output(prediction, dic):
 dic = create_dic()
 # In[4]:
 # Path to your image
-test_image = "./images/E2.png"
-predictions = loaded_model.predict(process_image(test_image))
-print(parse_output(predictions, dic))
+img_dir = ["./images/%s"%img for img in os.listdir("./images") if img.endswith("png")]
+processed_imgs = process(img_dir)
+
+# TODO: make predict work with batch of n images instead of a for oop to predict one at a time
+predictions = []
+for img in processed_imgs:
+    predictions.append(loaded_model.predict(img))
+for prediction in predictions:
+    print(parse_output(prediction, dic))
