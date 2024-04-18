@@ -28,4 +28,4 @@ model_v3.keras
         - 47 classes
         - 814,255 total samples
     - Issues/Notes:
-
+        Mis-predictions persis, this time giving 1 for E instead of I...

@@ -6,7 +6,7 @@ from PIL import ImageOps, Image
 from keras.preprocessing.image import *
 from matplotlib import pyplot as plt
 
-loaded_model = keras.models.load_model('./models/model_v2.keras', compile=False)
+loaded_model = keras.models.load_model('./models/model_v3.keras', compile=False)
 
 
 # In[2]:
@@ -26,7 +26,7 @@ def process(images):
     for img in images:
         processed_img = process_image(img)
         arr_images.append(processed_img)
-    return arr_images
+    return np.array(arr_images).reshape(-1,28,28,1)
 
 # In[3]:
 def create_dic():
@@ -48,9 +48,6 @@ dic = create_dic()
 img_dir = ["./images/%s"%img for img in os.listdir("./images") if img.endswith("png")]
 processed_imgs = process(img_dir)
 
-# TODO: make predict work with batch of n images instead of a for oop to predict one at a time
-predictions = []
-for img in processed_imgs:
-    predictions.append(loaded_model.predict(img))
+predictions = loaded_model.predict(processed_imgs)
 for prediction in predictions:
     print(parse_output(prediction, dic))
